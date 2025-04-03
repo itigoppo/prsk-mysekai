@@ -122,19 +122,6 @@ tags.push(
   ]),
 )
 
-// ゲート
-tags.push(
-  createTag("gate", "ゲート", [
-    createFurniture("gate", "ゲート", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-    ]),
-  ]),
-)
-
 // ミュージックプレイヤー
 tags.push(
   createTag("musicPlayer", "ミュージックプレイヤー", [
@@ -174,6 +161,19 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["vbs_meiko"]),
       ...filterMemberIdsById(wsMembers, ["nene", "rui", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["kanade"]),
+    ]),
+  ]),
+)
+
+// ゲート
+tags.push(
+  createTag("gate", "ゲート", [
+    createFurniture("gate", "ゲート", [
+      ...leoneedMembers,
+      ...mmjMembers,
+      ...vbsMembers,
+      ...wsMembers,
+      ...oclockMembers,
     ]),
   ]),
 )
