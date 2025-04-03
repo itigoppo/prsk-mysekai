@@ -135,6 +135,33 @@ tags.push(
   ]),
 )
 
+// ミュージックプレイヤー
+tags.push(
+  createTag("musicPlayer", "ミュージックプレイヤー", [
+    createFurniture("gramophone", "蓄音機", [
+      ...leoneedMembers,
+      ...mmjMembers,
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"], true),
+      ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+    ]),
+    createFurniture("recordPlayer", "レコードプレイヤー", [
+      ...leoneedMembers,
+      ...mmjMembers,
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku"], true),
+      ...filterMemberIdsById(wsMembers, ["ws_miku", "ws_kaito"], true),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+    ]),
+    createFurniture("componentAudio", "コンポーネントオーディオ", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku"]),
+      ...filterMemberIdsById(mmjMembers, ["mmj_rin"], true),
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["rui", "ws_miku", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"]),
+    ]),
+  ]),
+)
+
 // 公園
 tags.push(
   createTag("park", "公園", [
