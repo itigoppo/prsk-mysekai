@@ -42,19 +42,6 @@ const oclockCombinations = getCombinationsByUnitId("25oclock", units)
 // データの定義
 const tags: Tag[] = []
 
-// ゲート
-tags.push(
-  createTag("gate", "ゲート", [
-    createFurniture("gate", "ゲート", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-    ]),
-  ]),
-)
-
 // きらめく流星ルーム
 tags.push(
   createTag("unitRoom", "きらめく流星ルーム", [
@@ -131,6 +118,19 @@ tags.push(
     ]),
     createFurniture("unitKeyItem", "いつものファミレス席", [
       ...oclockCombinations.filter((members) => members.length !== 2),
+    ]),
+  ]),
+)
+
+// ゲート
+tags.push(
+  createTag("gate", "ゲート", [
+    createFurniture("gate", "ゲート", [
+      ...leoneedMembers,
+      ...mmjMembers,
+      ...vbsMembers,
+      ...wsMembers,
+      ...oclockMembers,
     ]),
   ]),
 )
