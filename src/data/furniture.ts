@@ -202,7 +202,13 @@ tags.push(
       ...wsMembers,
       ...oclockMembers,
     ]),
-    createFurniture("bookshelf", "ナチュラルな本棚", []),
+    createFurniture("bookshelf", "ナチュラルな本棚", [
+      ...leoneedMembers,
+      ...mmjMembers,
+      ...vbsMembers,
+      ...wsMembers,
+      ...oclockMembers,
+    ]),
     createFurniture("closet", "ナチュラルなクローゼット", [
       ...leoneedMembers,
       ...mmjMembers,
