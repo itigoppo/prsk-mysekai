@@ -13,7 +13,7 @@ export const View: FC = () => {
           <div>
             とうふの森のリアクションみたかチェック表。
             <br />
-            うちに無い設計図の家具は拾い次第随時追加します。
+            4.5周年までの家具はアーカイブから見た。全部あるはずだ。
           </div>
           <ul className="list-disc space-y-2 pl-5 text-sm">
             <li>

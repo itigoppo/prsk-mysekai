@@ -1,6 +1,4 @@
-import { tags } from "@/data/furniture"
 import { units } from "@/data/members"
-import { getFilteredFurniture } from "@/lib/util"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
@@ -17,14 +15,9 @@ export default function Page() {
     notFound()
   }
 
-  const unitMemberIds = targetUnit.members.map((member) => member.id)
-
   return (
     <Suspense>
-      <View
-        tags={getFilteredFurniture(unitMemberIds, tags)}
-        members={targetUnit.members}
-      />
+      <View members={targetUnit.members} />
     </Suspense>
   )
 }

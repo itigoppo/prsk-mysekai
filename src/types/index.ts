@@ -30,5 +30,15 @@ export type Tag = {
 export type Furniture = {
   id: string
   name: string
-  reactions: string[][]
+  reactions: Reaction[]
+}
+
+export type Reaction = {
+  memberIds: string[]
+  withItemNames?: string[]
+}
+
+export type MemberWithItemNames = {
+  memberIds: string[]
+  withItemNames: string[]
 }

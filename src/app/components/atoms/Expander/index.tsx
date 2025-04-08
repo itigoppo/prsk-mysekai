@@ -1,12 +1,13 @@
 "use client"
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material"
 import clsx from "clsx"
-import { FC, ReactNode, useState } from "react"
+import { FC, ReactNode, useEffect, useState } from "react"
 
 type Props = {
   toggleButtonText: ReactNode
   children: ReactNode
   isDefaultClose?: boolean
+  isOpen?: boolean
   className?: string
 }
 
@@ -14,6 +15,7 @@ export const Expander: FC<Props> = ({
   toggleButtonText,
   children,
   isDefaultClose,
+  isOpen,
   className,
 }) => {
   const [expanded, setExpanded] = useState<boolean>(
@@ -23,6 +25,12 @@ export const Expander: FC<Props> = ({
   const onClickToggleButton = () => {
     setExpanded((state) => !state)
   }
+
+  useEffect(() => {
+    if (isOpen !== undefined) {
+      setExpanded(isOpen)
+    }
+  }, [isOpen])
 
   return (
     <>

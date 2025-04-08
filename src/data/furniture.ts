@@ -1,32 +1,14 @@
 import {
+  addWithItemNamesToReactions,
+  convertToReactions,
+  createFurniture,
+  createTag,
   filterMemberIdsById,
   getCombinationsByUnitId,
   getMembersByUnitId,
 } from "@/lib/util"
-import { Furniture, Tag } from "@/types"
+import { Tag } from "@/types"
 import { units } from "./members"
-
-// 家具のデータを作成する関数
-const createFurniture = (
-  id: string,
-  name: string,
-  reactions: string[][],
-): Furniture => ({
-  id,
-  name,
-  reactions,
-})
-
-// タグのデータを作成する関数
-const createTag = (
-  id: string,
-  name: string,
-  furnitureList: Furniture[],
-): Tag => ({
-  id,
-  name,
-  furnitureList,
-})
 
 const leoneedMembers = getMembersByUnitId("leoneed", units)
 const leoneedCombinations = getCombinationsByUnitId("leoneed", units)
@@ -39,21 +21,87 @@ const wsCombinations = getCombinationsByUnitId("ws", units)
 const oclockMembers = getMembersByUnitId("25oclock", units)
 const oclockCombinations = getCombinationsByUnitId("25oclock", units)
 
+const leoneedReactions = convertToReactions(leoneedMembers)
+const mmjReactions = convertToReactions(mmjMembers)
+const vbsReactions = convertToReactions(vbsMembers)
+const wsReactions = convertToReactions(wsMembers)
+const oclockReactions = convertToReactions(oclockMembers)
+const leoneedCombinationsReactions = convertToReactions(leoneedCombinations)
+const mmjCombinationsReactions = convertToReactions(mmjCombinations)
+const vbsCombinationsReactions = convertToReactions(vbsCombinations)
+const wsCombinationsReactions = convertToReactions(wsCombinations)
+const oclockCombinationsReactions = convertToReactions(oclockCombinations)
+
+const leoneedPairs = leoneedCombinationsReactions.filter(
+  (reaction) => reaction.memberIds.length === 2,
+)
+const mmjPairs = mmjCombinationsReactions.filter(
+  (reaction) => reaction.memberIds.length === 2,
+)
+const vbsPairs = vbsCombinationsReactions.filter(
+  (reaction) => reaction.memberIds.length === 2,
+)
+const wsPairs = wsCombinationsReactions.filter(
+  (reaction) => reaction.memberIds.length === 2,
+)
+const oclockPairs = oclockCombinationsReactions.filter(
+  (reaction) => reaction.memberIds.length === 2,
+)
+
+// どれか1つリアクションみればいい家具の組み合わせ
+const sofas = [
+  "きらめく流星のソファ",
+  "かがやくクローバーのソファ",
+  "鮮やかなユニゾンのソファ",
+  "はじけるクラウンのソファ",
+  "ひび割れたハートのソファ",
+  "ナチュラルな2人掛けソファ",
+  "フレンチスタイルのソファ",
+]
+const musicPlayer = ["コンポーネントオーディオ", "レコードプレイヤー", "蓄音機"]
+const flowerBeds = [
+  "ガーデンの素朴な花壇",
+  "ガーデンの素朴な花壇/ポピー",
+  "ガーデンの素朴な花壇/コスモス",
+  "ガーデンの素朴な花壇/ラベンダー",
+]
+const latticePlanters = [
+  "ガーデンのラティスプランター",
+  "ガーデンのラティスプランター/ポピー",
+  "ガーデンのラティスプランター/コスモス",
+  "ガーデンのラティスプランター/ラベンダー",
+]
+const gardenCarts = [
+  "ガーデンカート",
+  "ガーデンカート/ポピー",
+  "ガーデンカート/コスモス",
+  "ガーデンカート/ラベンダー",
+]
+const foxStatues = ["雷神祭の狐像/右向き", "雷神祭の狐像/左向き"]
+
 // データの定義
 const tags: Tag[] = []
 
 // きらめく流星ルーム
 tags.push(
   createTag("unitRoom", "きらめく流星ルーム", [
-    createFurniture("chest", "きらめく流星のチェスト", [...leoneedMembers]),
-    createFurniture("bed", "きらめく流星のベッド", [...leoneedMembers]),
-    createFurniture("table", "きらめく流星のテーブル", [...leoneedMembers]),
-    createFurniture("rug", "きらめく流星のラグ", [...leoneedMembers]),
+    createFurniture("chest", "きらめく流星のチェスト", [...leoneedReactions]),
+    createFurniture("bed", "きらめく流星のベッド", [...leoneedReactions]),
+    createFurniture("table", "きらめく流星のテーブル", [...leoneedReactions]),
+    createFurniture("rug", "きらめく流星のラグ", [...leoneedReactions]),
     createFurniture("sofa", "きらめく流星のソファ", [
-      ...leoneedCombinations.filter((members) => members.length === 2),
+      ...addWithItemNamesToReactions(
+        leoneedPairs,
+        leoneedPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
     ]),
     createFurniture("unitKeyItem", "あの日のジャングルジム", [
-      ...leoneedCombinations.filter((members) => members.length !== 2),
+      ...leoneedCombinationsReactions.filter(
+        (reaction) => reaction.memberIds.length !== 2,
+      ),
     ]),
   ]),
 )
@@ -61,15 +109,23 @@ tags.push(
 // かがやくクローバールーム
 tags.push(
   createTag("unitRoom", "かがやくクローバールーム", [
-    createFurniture("chest", "かがやくクローバーのチェスト", [...mmjMembers]),
-    createFurniture("bed", "かがやくクローバーのベッド", [...mmjMembers]),
-    createFurniture("table", "かがやくクローバーのテーブル", [...mmjMembers]),
-    createFurniture("rug", "かがやくクローバーのラグ", [...mmjMembers]),
+    createFurniture("chest", "かがやくクローバーのチェスト", [...mmjReactions]),
+    createFurniture("bed", "かがやくクローバーのベッド", [...mmjReactions]),
+    createFurniture("table", "かがやくクローバーのテーブル", [...mmjReactions]),
+    createFurniture("rug", "かがやくクローバーのラグ", [...mmjReactions]),
     createFurniture("sofa", "かがやくクローバーのソファ", [
-      ...mmjCombinations.filter((members) => members.length === 2),
+      ...addWithItemNamesToReactions(
+        mmjPairs,
+        mmjPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
     ]),
     createFurniture("unitKeyItem", "配信用カメラ", [
-      ...mmjCombinations.filter((members) => members.length !== 2),
+      ...mmjCombinationsReactions.filter(
+        (reaction) => reaction.memberIds.length !== 2,
+      ),
     ]),
   ]),
 )
@@ -77,15 +133,23 @@ tags.push(
 // 鮮やかなユニゾンルーム
 tags.push(
   createTag("unitRoom", "鮮やかなユニゾンルーム", [
-    createFurniture("chest", "鮮やかなユニゾンのチェスト", [...vbsMembers]),
-    createFurniture("bed", "鮮やかなユニゾンのベッド", [...vbsMembers]),
-    createFurniture("table", "鮮やかなユニゾンのテーブル", [...vbsMembers]),
-    createFurniture("rug", "鮮やかなユニゾンのラグ", [...vbsMembers]),
+    createFurniture("chest", "鮮やかなユニゾンのチェスト", [...vbsReactions]),
+    createFurniture("bed", "鮮やかなユニゾンのベッド", [...vbsReactions]),
+    createFurniture("table", "鮮やかなユニゾンのテーブル", [...vbsReactions]),
+    createFurniture("rug", "鮮やかなユニゾンのラグ", [...vbsReactions]),
     createFurniture("sofa", "鮮やかなユニゾンのソファ", [
-      ...vbsCombinations.filter((members) => members.length === 2),
+      ...addWithItemNamesToReactions(
+        vbsPairs,
+        vbsPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
     ]),
     createFurniture("unitKeyItem", "ぷよぷよ通", [
-      ...vbsCombinations.filter((members) => members.length !== 2),
+      ...vbsCombinationsReactions.filter(
+        (reaction) => reaction.memberIds.length !== 2,
+      ),
     ]),
   ]),
 )
@@ -93,15 +157,23 @@ tags.push(
 // はじけるクラウンルーム
 tags.push(
   createTag("unitRoom", "はじけるクラウンルーム", [
-    createFurniture("chest", "はじけるクラウンのチェスト", [...wsMembers]),
-    createFurniture("bed", "はじけるクラウンのベッド", [...wsMembers]),
-    createFurniture("table", "はじけるクラウンのテーブル", [...wsMembers]),
-    createFurniture("rug", "はじけるクラウンのラグ", [...wsMembers]),
+    createFurniture("chest", "はじけるクラウンのチェスト", [...wsReactions]),
+    createFurniture("bed", "はじけるクラウンのベッド", [...wsReactions]),
+    createFurniture("table", "はじけるクラウンのテーブル", [...wsReactions]),
+    createFurniture("rug", "はじけるクラウンのラグ", [...wsReactions]),
     createFurniture("sofa", "はじけるクラウンのソファ", [
-      ...wsCombinations.filter((members) => members.length === 2),
+      ...addWithItemNamesToReactions(
+        wsPairs,
+        wsPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
     ]),
     createFurniture("unitKeyItem", "ネネロボのオブジェ", [
-      ...wsCombinations.filter((members) => members.length !== 2),
+      ...wsCombinationsReactions.filter(
+        (reaction) => reaction.memberIds.length !== 2,
+      ),
     ]),
   ]),
 )
@@ -109,15 +181,27 @@ tags.push(
 // ひび割れたハートルーム
 tags.push(
   createTag("unitRoom", "ひび割れたハートルーム", [
-    createFurniture("chest", "ひび割れたハートのチェスト", [...oclockMembers]),
-    createFurniture("bed", "ひび割れたハートのベッド", [...oclockMembers]),
-    createFurniture("table", "ひび割れたハートのテーブル", [...oclockMembers]),
-    createFurniture("rug", "ひび割れたハートのラグ", [...oclockMembers]),
+    createFurniture("chest", "ひび割れたハートのチェスト", [
+      ...oclockReactions,
+    ]),
+    createFurniture("bed", "ひび割れたハートのベッド", [...oclockReactions]),
+    createFurniture("table", "ひび割れたハートのテーブル", [
+      ...oclockReactions,
+    ]),
+    createFurniture("rug", "ひび割れたハートのラグ", [...oclockReactions]),
     createFurniture("sofa", "ひび割れたハートのソファ", [
-      ...oclockCombinations.filter((members) => members.length === 2),
+      ...addWithItemNamesToReactions(
+        oclockPairs,
+        oclockPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
     ]),
     createFurniture("unitKeyItem", "いつものファミレス席", [
-      ...oclockCombinations.filter((members) => members.length !== 2),
+      ...oclockCombinationsReactions.filter(
+        (reaction) => reaction.memberIds.length !== 2,
+      ),
     ]),
   ]),
 )
@@ -126,22 +210,58 @@ tags.push(
 tags.push(
   createTag("musicPlayer", "ミュージックプレイヤー", [
     createFurniture("componentAudio", "コンポーネントオーディオ", [
-      ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku"]),
-      ...filterMemberIdsById(mmjMembers, ["mmj_rin"], true),
+      ...addWithItemNamesToReactions(
+        filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku"]),
+        [
+          {
+            memberIds: ["ln_miku"],
+            withItemNames: musicPlayer,
+          },
+        ],
+      ),
+      ...addWithItemNamesToReactions(
+        filterMemberIdsById(mmjMembers, ["mmj_rin"], true),
+        [
+          {
+            memberIds: ["mmj_miku"],
+            withItemNames: musicPlayer,
+          },
+        ],
+      ),
       ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"]),
       ...filterMemberIdsById(wsMembers, ["rui", "ws_miku", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["25_miku"]),
     ]),
     createFurniture("recordPlayer", "レコードプレイヤー", [
-      ...leoneedMembers,
-      ...mmjMembers,
+      ...addWithItemNamesToReactions(leoneedReactions, [
+        {
+          memberIds: ["ln_miku"],
+          withItemNames: musicPlayer,
+        },
+      ]),
+      ...addWithItemNamesToReactions(mmjReactions, [
+        {
+          memberIds: ["mmj_miku"],
+          withItemNames: musicPlayer,
+        },
+      ]),
       ...filterMemberIdsById(vbsMembers, ["vbs_miku"], true),
       ...filterMemberIdsById(wsMembers, ["ws_miku", "ws_kaito"], true),
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
     ]),
     createFurniture("gramophone", "蓄音機", [
-      ...leoneedMembers,
-      ...mmjMembers,
+      ...addWithItemNamesToReactions(leoneedReactions, [
+        {
+          memberIds: ["ln_miku"],
+          withItemNames: musicPlayer,
+        },
+      ]),
+      ...addWithItemNamesToReactions(mmjReactions, [
+        {
+          memberIds: ["mmj_miku"],
+          withItemNames: musicPlayer,
+        },
+      ]),
       ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"], true),
       ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
@@ -169,11 +289,11 @@ tags.push(
 tags.push(
   createTag("gate", "ゲート", [
     createFurniture("gate", "ゲート", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
   ]),
 )
@@ -182,39 +302,39 @@ tags.push(
 tags.push(
   createTag("natural", "ナチュラル", [
     createFurniture("chest", "ナチュラルなチェスト", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["shizuku", "mmj_miku", "mmj_rin"]),
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
     createFurniture("bed", "ナチュラルなベッド", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
     createFurniture("diningTable", "ナチュラルなダイニングテーブル", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
     createFurniture("bookshelf", "ナチュラルな本棚", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
     createFurniture("closet", "ナチュラルなクローゼット", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
     createFurniture("dresser", "ナチュラルなドレッサー", [
       ...filterMemberIdsById(leoneedMembers, ["ln_miku", "ln_luka"], true),
@@ -224,12 +344,57 @@ tags.push(
         ["vbs_miku", "vbs_len", "vbs_meiko"],
         true,
       ),
-      ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"]),
     ]),
-    createFurniture("1SeaterSofa", "ナチュラルな1人掛けソファ", []),
     createFurniture("lowTable", "ナチュラルなローテーブル", [
       ...filterMemberIdsById(leoneedMembers, ["honami"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "ena", "mizuki"]),
+    ]),
+    createFurniture("sofa", "ナチュラルな2人掛けソファ", [
+      ...filterMemberIdsById(mmjMembers, ["mmj_miku", "mmj_rin"], true),
+      ...filterMemberIdsById(oclockMembers, ["mizuki"]),
+      ...addWithItemNamesToReactions(
+        leoneedPairs,
+        leoneedPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        mmjPairs,
+        mmjPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        vbsPairs,
+        vbsPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        wsPairs,
+        wsPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        oclockPairs,
+        oclockPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+    ]),
+    createFurniture("1SeaterSofa", "ナチュラルな1人掛けソファ", [
+      ...filterMemberIdsById(leoneedMembers, ["ln_luka"], true),
+      ...filterMemberIdsById(mmjMembers, ["mmj_rin"], true),
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku"]),
+      ...filterMemberIdsById(wsMembers, ["ws_miku"]),
+      ...oclockReactions,
     ]),
     createFurniture("tv", "ナチュラルな液晶テレビ", [
       ...filterMemberIdsById(leoneedMembers, ["ln_luka"], true),
@@ -237,16 +402,7 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["toya"], true),
       ...filterMemberIdsById(wsMembers, ["ws_miku", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["mafuyu"], true),
-      ["haruka", "shizuku"],
-    ]),
-    createFurniture("sofa", "ナチュラルな2人掛けソファ", [
-      ...filterMemberIdsById(mmjMembers, ["mmj_miku", "mmj_rin"], true),
-      ...filterMemberIdsById(oclockMembers, ["mizuki"]),
-      ...leoneedCombinations.filter((members) => members.length === 2),
-      ...mmjCombinations.filter((members) => members.length === 2),
-      ...vbsCombinations.filter((members) => members.length === 2),
-      ...wsCombinations.filter((members) => members.length === 2),
-      ...oclockCombinations.filter((members) => members.length === 2),
+      ...convertToReactions([["haruka", "shizuku"]]),
     ]),
   ]),
 )
@@ -254,7 +410,17 @@ tags.push(
 // シンプルポップキッチン
 tags.push(
   createTag("simplePopKitchen", "シンプルポップキッチン", [
-    createFurniture("stove", "コンロ", []),
+    createFurniture("stove", "コンロ", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "honami", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "mmj_miku"], true),
+      ...filterMemberIdsById(vbsMembers, ["vbs_len"], true),
+      ...filterMemberIdsById(wsMembers, ["emu", "rui", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu"]),
+      ...convertToReactions([
+        ["an", "akito"],
+        ["vbs_miku", "vbs_meiko"],
+      ]),
+    ]),
     createFurniture("sink", "シンク", [
       ...filterMemberIdsById(leoneedMembers, ["honami", "ln_luka"]),
       ...filterMemberIdsById(mmjMembers, ["airi"]),
@@ -275,22 +441,30 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["vbs_len"], true),
       ...filterMemberIdsById(wsMembers, ["emu", "rui", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "mafuyu", "ena"]),
-      ["an", "toya"],
-      ["rui", "ws_miku"],
+      ...convertToReactions([
+        ["an", "toya"],
+        ["rui", "ws_miku"],
+      ]),
     ]),
     createFurniture("spiceRack", "調味料ラック", [
       ...filterMemberIdsById(leoneedMembers, ["ln_luka"]),
       ...filterMemberIdsById(mmjMembers, ["minori", "shizuku"]),
       ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"]),
     ]),
-    createFurniture("stackedDishes", "積み重なった食器", []),
+    createFurniture("stackedDishes", "積み重なった食器", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "honami", "shiho"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "haruka", "shizuku"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "akito", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["emu"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade"]),
+    ]),
     createFurniture("coffeeMaker", "コーヒーメーカー", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "ln_miku"], true),
       ...filterMemberIdsById(mmjMembers, ["airi", "mmj_miku"], true),
       ...filterMemberIdsById(vbsMembers, ["vbs_len"], true),
       ...filterMemberIdsById(wsMembers, ["emu", "rui", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "mafuyu", "ena"]),
-      ["akito", "toya"],
+      ...convertToReactions([["akito", "toya"]]),
     ]),
     createFurniture("toaster", "ポップアップトースター", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "ln_miku"], true),
@@ -298,7 +472,7 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["vbs_len"], true),
       ...filterMemberIdsById(wsMembers, ["emu", "rui", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "mafuyu", "ena"]),
-      ["ichika", "ln_miku"],
+      ...convertToReactions([["ichika", "ln_miku"]]),
     ]),
     createFurniture("ovenRange", "オーブンレンジ", [
       ...filterMemberIdsById(leoneedMembers, ["honami", "shiho"]),
@@ -306,7 +480,18 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "vbs_miku", "vbs_meiko"]),
       ...filterMemberIdsById(wsMembers, ["emu", "rui"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "ena"]),
-      ["ichika", "honami"],
+      ...convertToReactions([["ichika", "honami"]]),
+    ]),
+    createFurniture("vegetableBasket", "野菜バスケット", [
+      ...filterMemberIdsById(leoneedMembers, ["honami"], true),
+      ...filterMemberIdsById(mmjMembers, ["airi", "mmj_miku"], true),
+      ...filterMemberIdsById(
+        vbsMembers,
+        ["kohane", "vbs_miku", "vbs_len"],
+        true,
+      ),
+      ...filterMemberIdsById(wsMembers, ["nene", "ws_miku"], true),
+      ...filterMemberIdsById(oclockMembers, ["mizuki", "25_miku"], true),
     ]),
   ]),
 )
@@ -334,14 +519,14 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "akito", "vbs_meiko"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "ena", "25_miku"]),
-      ["haruka", "mmj_rin"],
+      ...convertToReactions([["haruka", "mmj_rin"]]),
     ]),
     createFurniture("toothbrushAndCup", "歯ブラシとコップ", [
       ...filterMemberIdsById(mmjMembers, ["airi", "mmj_miku", "mmj_rin"]),
       ...filterMemberIdsById(vbsMembers, ["kohane", "akito"]),
       ...filterMemberIdsById(wsMembers, ["emu"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "ena", "25_miku"]),
-      ["tsukasa", "ws_miku"],
+      ...convertToReactions([["tsukasa", "ws_miku"]]),
     ]),
     createFurniture("dryer", "ドライヤー", [
       ...filterMemberIdsById(leoneedMembers, ["honami", "ln_luka"]),
@@ -349,33 +534,81 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "akito", "vbs_meiko"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "ena", "25_miku"]),
-      ["shiho", "ln_luka"],
+      ...convertToReactions([["shiho", "ln_luka"]]),
     ]),
   ]),
 )
 
 // ガーデン
+const flowerBedReactions = [
+  ...filterMemberIdsById(leoneedMembers, ["saki", "shiho"], true),
+  ...filterMemberIdsById(mmjMembers, ["minori", "airi", "shizuku"], true),
+  ...filterMemberIdsById(vbsMembers, ["an"], true),
+  ...wsReactions,
+  ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"]),
+]
+
+const latticePlanterReactions = [
+  ...filterMemberIdsById(leoneedMembers, ["saki", "shiho"], true),
+  ...filterMemberIdsById(mmjMembers, ["minori", "airi"], true),
+  ...filterMemberIdsById(vbsMembers, ["an"], true),
+  ...wsReactions,
+  ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"]),
+]
+
+const gardenCartReactions = [
+  ...filterMemberIdsById(leoneedMembers, ["ichika", "honami", "ln_luka"]),
+  ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku", "mmj_rin"]),
+  ...filterMemberIdsById(vbsMembers, ["an", "vbs_miku"], true),
+  ...filterMemberIdsById(wsMembers, ["rui"], true),
+  ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"]),
+]
 tags.push(
   createTag("garden", "ガーデン", [
-    createFurniture(
-      "flowerBed",
-      "ガーデンの素朴な花壇(ポピー/コスモス/ラベンダー)",
-      [
-        ...filterMemberIdsById(leoneedMembers, ["saki", "shiho"], true),
-        ...filterMemberIdsById(mmjMembers, ["minori", "airi", "shizuku"], true),
-        ...filterMemberIdsById(vbsMembers, ["an"], true),
-        ...wsMembers,
-        ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"]),
-        ["emu", "rui"],
-      ],
-    ),
+    createFurniture("flowerBed", "ガーデンの素朴な花壇", [
+      ...addWithItemNamesToReactions(
+        flowerBedReactions,
+        flowerBedReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: flowerBeds,
+        })),
+      ),
+      ...convertToReactions([["emu", "rui"]]),
+    ]),
+    createFurniture("flowerBedPoppy", "ガーデンの素朴な花壇/ポピー", [
+      ...addWithItemNamesToReactions(
+        flowerBedReactions,
+        flowerBedReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: flowerBeds,
+        })),
+      ),
+    ]),
+    createFurniture("flowerBedCosmos", "ガーデンの素朴な花壇/コスモス", [
+      ...addWithItemNamesToReactions(
+        flowerBedReactions,
+        flowerBedReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: flowerBeds,
+        })),
+      ),
+    ]),
+    createFurniture("flowerBedLavender", "ガーデンの素朴な花壇/ラベンダー", [
+      ...addWithItemNamesToReactions(
+        flowerBedReactions,
+        flowerBedReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: flowerBeds,
+        })),
+      ),
+    ]),
     createFurniture("parasolTable", "ガーデンのパラソルテーブル", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "shiho"], true),
       ...filterMemberIdsById(mmjMembers, ["haruka", "mmj_miku", "mmj_rin"]),
       ...filterMemberIdsById(vbsMembers, ["an"], true),
       ...filterMemberIdsById(wsMembers, ["emu", "rui"], true),
       ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"]),
-      ["ws_miku", "ws_kaito"],
+      ...convertToReactions([["ws_miku", "ws_kaito"]]),
     ]),
     createFurniture("bench", "ガーデンのベンチ", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku", "ln_luka"]),
@@ -392,16 +625,53 @@ tags.push(
     createFurniture("ironChair", "ガーデンのアイアンチェア", [
       ...filterMemberIdsById(mmjMembers, ["shizuku"]),
     ]),
+    createFurniture("latticePlanter", "ガーデンのラティスプランター", [
+      ...addWithItemNamesToReactions(
+        latticePlanterReactions,
+        latticePlanterReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: latticePlanters,
+        })),
+      ),
+      ...convertToReactions([["haruka", "mmj_miku"]]),
+    ]),
     createFurniture(
-      "latticePlanter",
-      "ガーデンのラティスプランター(ポピー/コスモス/ラベンダー)",
+      "latticePlanterPoppy",
+      "ガーデンのラティスプランター/ポピー",
       [
-        ...filterMemberIdsById(leoneedMembers, ["saki", "shiho"], true),
-        ...filterMemberIdsById(mmjMembers, ["minori", "airi"], true),
-        ...filterMemberIdsById(vbsMembers, ["an"], true),
-        ...wsMembers,
-        ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"]),
-        ["haruka", "mmj_miku"],
+        ...addWithItemNamesToReactions(
+          latticePlanterReactions,
+          latticePlanterReactions.map((reaction) => ({
+            ...reaction,
+            withItemNames: latticePlanters,
+          })),
+        ),
+      ],
+    ),
+    createFurniture(
+      "latticePlanterCosmos",
+      "ガーデンのラティスプランター/コスモス",
+      [
+        ...addWithItemNamesToReactions(
+          latticePlanterReactions,
+          latticePlanterReactions.map((reaction) => ({
+            ...reaction,
+            withItemNames: latticePlanters,
+          })),
+        ),
+      ],
+    ),
+    createFurniture(
+      "latticePlanterLavender",
+      "ガーデンのラティスプランター/ラベンダー",
+      [
+        ...addWithItemNamesToReactions(
+          latticePlanterReactions,
+          latticePlanterReactions.map((reaction) => ({
+            ...reaction,
+            withItemNames: latticePlanters,
+          })),
+        ),
       ],
     ),
     createFurniture("stepLadder", "ガーデンのステップラダー", [
@@ -411,15 +681,56 @@ tags.push(
       ...filterMemberIdsById(wsMembers, ["nene", "ws_miku"], true),
       ...filterMemberIdsById(oclockMembers, ["25_miku"]),
     ]),
-    createFurniture("toolShelf", "ガーデンツールシェルフ", []),
-    createFurniture("cart", "ガーデンカート(ポピー/コスモス/ラベンダー)", [
-      ...filterMemberIdsById(leoneedMembers, ["ichika", "honami", "ln_luka"]),
-      ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku", "mmj_rin"]),
-      ...filterMemberIdsById(vbsMembers, ["an", "vbs_miku"], true),
-      ...filterMemberIdsById(wsMembers, ["rui"], true),
+    createFurniture("toolShelf", "ガーデンツールシェルフ", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["shizuku"]),
+      ...filterMemberIdsById(vbsMembers, ["an", "akito"], true),
+      ...wsReactions,
+      ...filterMemberIdsById(oclockMembers, ["25_miku"]),
+    ]),
+    createFurniture("gardenCart", "ガーデンカート", [
+      ...addWithItemNamesToReactions(
+        gardenCartReactions,
+        gardenCartReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: gardenCarts,
+        })),
+      ),
+    ]),
+    createFurniture("gardenCartPoppy", "ガーデンカート/ポピー", [
+      ...addWithItemNamesToReactions(
+        gardenCartReactions,
+        gardenCartReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: gardenCarts,
+        })),
+      ),
+    ]),
+    createFurniture("gardenCartCosmos", "ガーデンカート/コスモス", [
+      ...addWithItemNamesToReactions(
+        gardenCartReactions,
+        gardenCartReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: gardenCarts,
+        })),
+      ),
+    ]),
+    createFurniture("gardenCartLavender", "ガーデンカート/ラベンダー", [
+      ...addWithItemNamesToReactions(
+        gardenCartReactions,
+        gardenCartReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: gardenCarts,
+        })),
+      ),
+    ]),
+    createFurniture("tinWateringCan", "ガーデンのブリキじょうろ", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "shiho"], true),
+      ...filterMemberIdsById(mmjMembers, ["minori", "airi"], true),
+      ...filterMemberIdsById(vbsMembers, ["an"], true),
+      ...wsReactions,
       ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"]),
     ]),
-    createFurniture("tinWateringCan", "ガーデンのブリキじょうろ", []),
   ]),
 )
 
@@ -427,25 +738,33 @@ tags.push(
 tags.push(
   createTag("park", "公園", [
     createFurniture("swing", "ブランコ", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["minori", "shizuku", "mmj_rin"]),
       ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"], true),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["shiho", "ln_miku"],
-      ["emu", "nene"],
+      ...convertToReactions([
+        ["shiho", "ln_miku"],
+        ["emu", "nene"],
+      ]),
     ]),
-    createFurniture("slide", "滑り台", []),
+    createFurniture("slide", "滑り台", [
+      ...filterMemberIdsById(leoneedMembers, ["honami", "shiho"], true),
+      ...filterMemberIdsById(mmjMembers, ["minori", "shizuku", "mmj_rin"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["nene"], true),
+      ...filterMemberIdsById(oclockMembers, ["ena"], true),
+    ]),
     createFurniture("springPlay", "くまのスプリング遊具", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "saki", "ln_luka"]),
       ...filterMemberIdsById(mmjMembers, ["mmj_rin"]),
       ...filterMemberIdsById(vbsMembers, ["an", "toya", "vbs_len"]),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["airi", "mmj_rin"],
+      ...convertToReactions([["airi", "mmj_rin"]]),
     ]),
     createFurniture("sandbox", "砂場", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["minori", "shizuku", "mmj_rin"]),
       ...filterMemberIdsById(
         vbsMembers,
@@ -454,9 +773,15 @@ tags.push(
       ),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["ichika", "ln_luka"],
+      ...convertToReactions([["ichika", "ln_luka"]]),
     ]),
-    createFurniture("seesaw", "シーソー", []),
+    createFurniture("seesaw", "シーソー", [
+      ...leoneedReactions,
+      ...filterMemberIdsById(mmjMembers, ["shizuku", "mmj_rin"]),
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"], true),
+      ...filterMemberIdsById(wsMembers, ["nene"], true),
+      ...filterMemberIdsById(oclockMembers, ["ena"], true),
+    ]),
     createFurniture("bench", "公園のベンチ", [
       ...filterMemberIdsById(vbsMembers, ["an", "toya"]),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "emu"]),
@@ -478,15 +803,15 @@ tags.push(
       ),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["emu", "ws_miku"],
+      ...convertToReactions([["emu", "ws_miku"]]),
     ]),
     createFurniture("bars", "鉄棒", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["minori", "mmj_rin"]),
       ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"], true),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["nene", "ws_miku"],
+      ...convertToReactions([["nene", "ws_miku"]]),
     ]),
     createFurniture("tire", "公園のタイヤ", [
       ...filterMemberIdsById(leoneedMembers, ["honami", "ln_miku"], true),
@@ -496,7 +821,7 @@ tags.push(
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
     ]),
     createFurniture("rotatingJungleGym", "回転ジャングルジム", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["mmj_rin"]),
       ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"], true),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
@@ -516,8 +841,8 @@ tags.push(
         true,
       ),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
-      ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["nene", "rui"],
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "ena"], true),
+      ...convertToReactions([["nene", "rui"]]),
     ]),
     createFurniture("clayPipe", "土管", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "shiho"]),
@@ -525,7 +850,7 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"], true),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["tsukasa", "rui"],
+      ...convertToReactions([["tsukasa", "rui"]]),
     ]),
   ]),
 )
@@ -535,25 +860,33 @@ tags.push(
   createTag("simpleJapaneseStyleRoom", "素朴な和室", [
     createFurniture("dressingTable", "和風の素朴な鏡台", [
       ...filterMemberIdsById(leoneedMembers, ["shiho", "ln_miku", "ln_luka"]),
-      ...mmjMembers,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["an", "vbs_len"], true),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "emu", "ws_miku"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "ena"]),
     ]),
     createFurniture("lowTable", "和風の素朴なちゃぶ台", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["saki", "ln_luka"],
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["saki", "ln_luka"]]),
+    ]),
+    createFurniture("tv", "和風の素朴なテレビ", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["an", "vbs_len"]]),
     ]),
     createFurniture("cupboard", "和風の素朴な戸棚", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "ln_miku"], true),
       ...filterMemberIdsById(mmjMembers, ["mmj_miku", "mmj_rin"], true),
       ...filterMemberIdsById(vbsMembers, ["vbs_miku"], true),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "nene", "rui"]),
-      ...oclockMembers,
+      ...oclockReactions,
     ]),
     createFurniture("kettle", "和風の素朴なやかん", [
       ...filterMemberIdsById(leoneedMembers, ["saki"], true),
@@ -561,23 +894,31 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane"], true),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "ws_miku"], true),
       ...filterMemberIdsById(oclockMembers, ["mizuki"], true),
-      ["saki", "ln_miku"],
+      ...convertToReactions([["saki", "ln_miku"]]),
     ]),
     createFurniture("teapot", "和風の素朴な急須", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "ln_miku"], true),
-      ...mmjMembers,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["kohane"], true),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "emu", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["mizuki"], true),
-      ["kanade", "mafuyu"],
+      ...convertToReactions([["kanade", "mafuyu"]]),
+    ]),
+    createFurniture("phone", "和風の素朴な黒電話", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["rui", "ws_kaito"]]),
     ]),
     createFurniture("beckoningCat", "和風の素朴な招き猫", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["akito", "vbs_miku"],
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["akito", "vbs_miku"]]),
     ]),
   ]),
 )
@@ -590,12 +931,24 @@ tags.push(
       ...filterMemberIdsById(mmjMembers, ["airi"]),
       ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya", "vbs_len"]),
     ]),
-    createFurniture("pictureBookShelf", "キッズルームの絵本棚", []),
+    createFurniture("bed", "キッズルームのくまさんベッド", [
+      ...filterMemberIdsById(mmjMembers, ["minori", "airi"]),
+      ...filterMemberIdsById(vbsMembers, ["an", "toya", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "emu", "rui"]),
+    ]),
     createFurniture("table", "キッズルームのテーブル", [
       ...filterMemberIdsById(mmjMembers, ["airi"]),
       ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya"]),
       ...filterMemberIdsById(wsMembers, ["emu"]),
       ...filterMemberIdsById(oclockMembers, ["25_miku"]),
+    ]),
+    createFurniture("pictureBookShelf", "キッズルームの絵本棚", [
+      ...filterMemberIdsById(leoneedMembers, ["saki"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "airi"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["nene"], true),
+      ...filterMemberIdsById(oclockMembers, ["mizuki", "25_miku"]),
+      ...convertToReactions([["toya", "vbs_miku"]]),
     ]),
     createFurniture("toyBox", "キッズルームのおもちゃ箱", [
       ...filterMemberIdsById(leoneedMembers, ["saki"]),
@@ -610,7 +963,7 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya", "vbs_len"]),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["25_miku"]),
-      ["kohane", "vbs_len"],
+      ...convertToReactions([["kohane", "vbs_len"]]),
     ]),
     createFurniture("train", "キッズルームの汽車のおもちゃ", [
       ...filterMemberIdsById(leoneedMembers, ["saki"]),
@@ -625,16 +978,22 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya", "vbs_len"]),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["mizuki", "25_miku"]),
-      ["tsukasa", "ws_kaito"],
+      ...convertToReactions([["tsukasa", "ws_kaito"]]),
     ]),
-    createFurniture("stuffedElephant", "キッズルームのぞうのぬいぐるみ", []),
+    createFurniture("stuffedElephant", "キッズルームのぞうのぬいぐるみ", [
+      ...filterMemberIdsById(leoneedMembers, ["saki"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "airi"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["nene"], true),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"]),
+    ]),
     createFurniture("surpriseBox", "キッズルームのびっくり箱", [
       ...filterMemberIdsById(leoneedMembers, ["saki"]),
       ...filterMemberIdsById(mmjMembers, ["minori", "airi"]),
       ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya", "vbs_len"]),
       ...filterMemberIdsById(wsMembers, ["nene"], true),
       ...filterMemberIdsById(oclockMembers, ["mizuki", "25_miku"]),
-      ["mafuyu", "mizuki"],
+      ...convertToReactions([["mafuyu", "mizuki"]]),
     ]),
     createFurniture("buildingBlocks", "キッズルームの積み木", [
       ...filterMemberIdsById(mmjMembers, ["minori", "airi"]),
@@ -654,24 +1013,45 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["akito", "toya"]),
       ...filterMemberIdsById(wsMembers, ["rui"]),
     ]),
+    createFurniture("tabletopMirror", "カジュアルな卓上鏡", [
+      ...filterMemberIdsById(vbsMembers, ["toya"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa"]),
+    ]),
     createFurniture("bed", "カジュアルなベッド", [
       ...filterMemberIdsById(leoneedMembers, ["shiho"]),
       ...filterMemberIdsById(vbsMembers, ["akito"]),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "rui"]),
     ]),
-    createFurniture("studyDesk", "カジュアルな学習机", []),
+    createFurniture("studyDesk", "カジュアルな学習机", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "haruka"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an"], true),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "rui", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu"]),
+    ]),
     createFurniture("bookshelf", "カジュアルな本棚", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "shiho", "ln_miku"]),
       ...filterMemberIdsById(mmjMembers, ["minori", "haruka"]),
       ...filterMemberIdsById(vbsMembers, ["kohane", "an"], true),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "rui", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["mafuyu", "mizuki"]),
-      ["kohane", "toya"],
+      ...convertToReactions([["kohane", "toya"]]),
     ]),
     createFurniture("rug", "カジュアルなチェッカー柄ラグ", [
       ...filterMemberIdsById(vbsMembers, ["vbs_len"]),
     ]),
-    createFurniture("comics", "カジュアルな読みかけの漫画", []),
+    createFurniture("deskLamp", "カジュアルなデスクライト", [
+      ...filterMemberIdsById(vbsMembers, ["toya"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa"]),
+    ]),
+    createFurniture("comics", "カジュアルな読みかけの漫画", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "shiho", "ln_miku"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "haruka"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an"], true),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "rui", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "mizuki"]),
+      ...convertToReactions([["mizuki", "25_miku"]]),
+    ]),
     createFurniture("handheldGameConsoles", "カジュアルな携帯ゲーム機", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "shiho", "ln_miku"]),
       ...filterMemberIdsById(mmjMembers, ["minori", "haruka"]),
@@ -685,7 +1065,15 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "an"], true),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "rui", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["mafuyu", "mizuki"]),
-      ["emu", "kaito"],
+      ...convertToReactions([["emu", "ws_kaito"]]),
+    ]),
+    createFurniture("alarmClock", "カジュアルな目覚まし時計", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku"]),
+      ...filterMemberIdsById(mmjMembers, ["minori"]),
+      ...filterMemberIdsById(vbsMembers, ["toya", "vbs_len", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["mizuki"]),
+      ...convertToReactions([["vbs_miku", "vbs_len"]]),
     ]),
     createFurniture("stuffedDog", "カジュアルなビーグル犬のぬいぐるみ", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "shiho", "ln_miku"]),
@@ -697,12 +1085,12 @@ tags.push(
         "vbs_meiko",
       ]),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "rui", "ws_kaito"]),
-      ["honami", "shiho"],
+      ...convertToReactions([["honami", "shiho"]]),
     ]),
     createFurniture("hangerRack", "カジュアルなハンガーラック", [
       ...filterMemberIdsById(vbsMembers, ["akito", "toya", "vbs_meiko"]),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "rui", "ws_kaito"]),
-      ["kohane", "akito"],
+      ...convertToReactions([["kohane", "akito"]]),
     ]),
   ]),
 )
@@ -723,7 +1111,14 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "an"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["ena", "mizuki", "25_miku"]),
-      ["an", "vbs_miku"],
+      ...convertToReactions([["an", "vbs_miku"]]),
+    ]),
+    createFurniture("bed", "キュートなベッド", [
+      ...filterMemberIdsById(leoneedMembers, ["saki"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "airi", "shizuku"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an"]),
+      ...filterMemberIdsById(wsMembers, ["nene"]),
+      ...filterMemberIdsById(oclockMembers, ["ena", "25_miku"]),
     ]),
     createFurniture("lowTable", "キュートなローテブル", [
       ...filterMemberIdsById(mmjMembers, ["minori"]),
@@ -735,7 +1130,7 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "an"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["ena", "mizuki", "25_miku"]),
-      ["an", "vbs_meiko"],
+      ...convertToReactions([["an", "vbs_meiko"]]),
     ]),
     createFurniture("wardrobe", "キュートなワードローブ", [
       ...filterMemberIdsById(vbsMembers, ["kohane", "an"]),
@@ -748,13 +1143,36 @@ tags.push(
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["ena", "25_miku"]),
     ]),
+    createFurniture("ribbonChair", "キュートなリボンチェア", [
+      ...filterMemberIdsById(mmjMembers, ["mmj_rin"]),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"]),
+    ]),
+    createFurniture("rug", "キュートなラグ", [
+      ...filterMemberIdsById(oclockMembers, ["ena"]),
+    ]),
+    createFurniture("stuffedRabbit", "キュートなうさぎのぬいぐるみ", [
+      ...filterMemberIdsById(leoneedMembers, ["saki"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka"], true),
+      ...filterMemberIdsById(vbsMembers, ["kohane"]),
+      ...filterMemberIdsById(wsMembers, ["nene"]),
+      ...filterMemberIdsById(oclockMembers, ["ena", "25_miku"]),
+      ...convertToReactions([["saki", "shiho"]]),
+    ]),
+    createFurniture("makeupBox", "キュートなメイクボックス", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "honami"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka"], true),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an"]),
+      ...filterMemberIdsById(wsMembers, ["nene"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "mafuyu"], true),
+      ...convertToReactions([["mafuyu", "ena"]]),
+    ]),
     createFurniture("perfume", "キュートな香水", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "honami"]),
       ...filterMemberIdsById(mmjMembers, ["haruka"], true),
       ...filterMemberIdsById(vbsMembers, ["kohane", "an"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["ena", "mizuki", "25_miku"]),
-      ["ena", "mizuki"],
+      ...convertToReactions([["ena", "mizuki"]]),
     ]),
   ]),
 )
@@ -769,12 +1187,69 @@ tags.push(
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "25_miku"], true),
     ]),
+    createFurniture("fullLengthMirror", "フレンチスタイルの姿見", [
+      ...filterMemberIdsById(leoneedMembers, ["ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "haruka"], true),
+      ...filterMemberIdsById(vbsMembers, ["vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["nene"]),
+      ...filterMemberIdsById(oclockMembers, ["ena", "mizuki"]),
+      ...convertToReactions([["minori", "shizuku"]]),
+    ]),
     createFurniture("bed", "フレンチスタイルのベッド", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "honami", "shiho"]),
       ...filterMemberIdsById(mmjMembers, ["haruka", "airi"]),
       ...filterMemberIdsById(vbsMembers, ["kohane", "an"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+    ]),
+    createFurniture("roundTable", "フレンチスタイルのラウンドテーブル", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka", "airi", "mmj_rin"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["nene"]),
+      ...filterMemberIdsById(oclockMembers, ["ena", "mizuki"]),
+    ]),
+    createFurniture("sofa", "フレンチスタイルのソファ", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "honami"], true),
+      ...filterMemberIdsById(mmjMembers, ["minori", "mmj_rin"], true),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["nene"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"], true),
+      ...addWithItemNamesToReactions(
+        leoneedPairs,
+        leoneedPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        mmjPairs,
+        mmjPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        vbsPairs,
+        vbsPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        wsPairs,
+        wsPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        oclockPairs,
+        oclockPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
     ]),
     createFurniture("bookshelf", "フレンチスタイルの本棚", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "shiho"], true),
@@ -823,7 +1298,7 @@ tags.push(
       ]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
-      ["kohane", "vbs_meiko"],
+      ...convertToReactions([["kohane", "vbs_meiko"]]),
     ]),
     createFurniture("flowerVase", "フレンチスタイルのフラワーベース", [
       ...filterMemberIdsById(leoneedMembers, ["honami", "ln_miku", "ln_luka"]),
@@ -835,21 +1310,43 @@ tags.push(
     createFurniture(
       "aromatherapyCandles",
       "フレンチスタイルのアロマキャンドル",
-      [],
+      [
+        ...filterMemberIdsById(leoneedMembers, ["ichika"], true),
+        ...filterMemberIdsById(mmjMembers, ["minori"], true),
+        ...filterMemberIdsById(vbsMembers, [
+          "kohane",
+          "an",
+          "vbs_miku",
+          "vbs_meiko",
+        ]),
+        ...filterMemberIdsById(wsMembers, ["nene"]),
+        ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+        ...convertToReactions([["nene", "ws_kaito"]]),
+      ],
     ),
-    createFurniture("teddyBear", "フレンチスタイルのくまのぬいぐるみ", []),
-    createFurniture("teaSet", "フレンチスタイルのティーセット", []),
-    createFurniture("sofa", "フレンチスタイルのソファ", [
-      ...filterMemberIdsById(leoneedMembers, ["ichika", "honami"], true),
-      ...filterMemberIdsById(mmjMembers, ["minori", "mmj_rin"], true),
-      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "vbs_meiko"]),
+    createFurniture("teddyBear", "フレンチスタイルのくまのぬいぐるみ", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika"], true),
+      ...filterMemberIdsById(mmjMembers, ["minori"], true),
+      ...filterMemberIdsById(vbsMembers, ["kohane"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
-      ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"], true),
-      ...leoneedCombinations.filter((members) => members.length === 2),
-      ...mmjCombinations.filter((members) => members.length === 2),
-      ...vbsCombinations.filter((members) => members.length === 2),
-      ...wsCombinations.filter((members) => members.length === 2),
-      ...oclockCombinations.filter((members) => members.length === 2),
+      ...filterMemberIdsById(oclockMembers, ["ena", "mizuki"]),
+      ...convertToReactions([["kanade", "ena"]]),
+    ]),
+    createFurniture("teaSet", "フレンチスタイルのティーセット", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "saki"], true),
+      ...filterMemberIdsById(mmjMembers, ["minori", "mmj_miku"], true),
+      ...filterMemberIdsById(vbsMembers, [
+        "kohane",
+        "an",
+        "vbs_miku",
+        "vbs_meiko",
+      ]),
+      ...filterMemberIdsById(wsMembers, ["nene"]),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+      ...convertToReactions([
+        ["honami", "ln_luka"],
+        ["kohane", "an"],
+      ]),
     ]),
   ]),
 )
@@ -863,39 +1360,57 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane"], true),
       ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
       ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"], true),
-      ["kanade", "25_miku"],
+      ...convertToReactions([["kanade", "25_miku"]]),
     ]),
     createFurniture("yogaMat", "ヨガマット", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "honami", "shiho"]),
-      ...mmjMembers,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["kohane"], true),
-      ...wsMembers,
+      ...filterMemberIdsById(wsMembers, ["rui"], true),
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
     ]),
     createFurniture("absRoller", "腹筋ローラー", [
       ...filterMemberIdsById(leoneedMembers, ["ln_miku", "ln_luka"], true),
-      ...mmjMembers,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["kohane"], true),
-      ...wsMembers,
+      ...wsReactions,
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
     ]),
-    createFurniture("balanceBall", "バランスボール", []),
-    createFurniture("runningMachine", "ランニングマシン", []),
+    createFurniture("balanceBall", "バランスボール", [
+      ...filterMemberIdsById(leoneedMembers, ["ln_miku", "ln_luka"], true),
+      ...mmjReactions,
+      ...filterMemberIdsById(vbsMembers, ["kohane"], true),
+      ...wsReactions,
+      ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+      ...convertToReactions([["minori", "airi"]]),
+    ]),
+    createFurniture("runningMachine", "ランニングマシン", [
+      ...filterMemberIdsById(leoneedMembers, ["ln_miku", "ln_luka"], true),
+      ...mmjReactions,
+      ...filterMemberIdsById(vbsMembers, ["kohane"], true),
+      ...filterMemberIdsById(wsMembers, ["tsukasa"], true),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+    ]),
+    createFurniture("twoPersonRunningMachine", "2人用ランニングマシン", [
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "nene"]),
+      ...filterMemberIdsById(oclockMembers, ["mizuki"]),
+      ...convertToReactions([["haruka", "airi"]]),
+    ]),
     createFurniture("fitnessBike", "フィットネスバイク", [
       ...filterMemberIdsById(leoneedMembers, ["ln_miku", "ln_luka"], true),
-      ...mmjMembers,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["kohane"], true),
-      ...wsMembers,
+      ...wsReactions,
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
-      ["tsukasa", "emu"],
+      ...convertToReactions([["tsukasa", "emu"]]),
     ]),
     createFurniture("dumbbell", "ダンベル", [
       ...filterMemberIdsById(leoneedMembers, ["ln_miku", "ln_luka"], true),
-      ...mmjMembers,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["kohane"], true),
-      ...wsMembers,
+      ...wsReactions,
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
-      ["haruka", "minori"],
+      ...convertToReactions([["minori", "haruka"]]),
     ]),
   ]),
 )
@@ -904,31 +1419,36 @@ tags.push(
 tags.push(
   createTag("musicStudio", "音楽スタジオ", [
     createFurniture("synthesizer", "シンセサイザー", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["haruka"]),
       ...filterMemberIdsById(vbsMembers, ["toya", "vbs_len"]),
       ...filterMemberIdsById(oclockMembers, ["ena", "mizuki"], true),
-      ["kanade", "mizuki"],
+      ...convertToReactions([["kanade", "mizuki"]]),
     ]),
     createFurniture("electricGuitar", "エレキギター", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["haruka"]),
       ...filterMemberIdsById(vbsMembers, ["toya", "vbs_len"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["ena", "mizuki"], true),
     ]),
-    createFurniture("electricBass", "エレキベース", []),
+    createFurniture("electricBass", "エレキベース", [
+      ...leoneedReactions,
+      ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku"]),
+      ...filterMemberIdsById(vbsMembers, ["toya", "vbs_len"]),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"]),
+    ]),
     createFurniture("drumSet", "ドラムセット", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["haruka"]),
       ...filterMemberIdsById(vbsMembers, ["toya", "vbs_len"]),
       ...filterMemberIdsById(oclockMembers, ["ena", "mizuki"], true),
-      ["ena", "25_miku"],
+      ...convertToReactions([["ena", "25_miku"]]),
     ]),
     createFurniture("amplifier", "アンプ", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "honami"], true),
       ...filterMemberIdsById(vbsMembers, ["toya"]),
-      ["ichika", "shiho"],
+      ...convertToReactions([["ichika", "shiho"]]),
     ]),
     createFurniture("headphone", "ヘッドホン", [
       ...filterMemberIdsById(leoneedMembers, ["saki"], true),
@@ -944,12 +1464,12 @@ tags.push(
       ...filterMemberIdsById(oclockMembers, ["mizuki"]),
     ]),
     createFurniture("cd", "山積みのCD", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["haruka"]),
       ...filterMemberIdsById(vbsMembers, ["toya", "vbs_len"]),
       ...filterMemberIdsById(wsMembers, ["nene"]),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["akito", "vbs_len"],
+      ...convertToReactions([["akito", "vbs_len"]]),
     ]),
   ]),
 )
@@ -961,7 +1481,13 @@ tags.push(
       ...filterMemberIdsById(leoneedMembers, ["honami"]),
       ...filterMemberIdsById(wsMembers, ["rui"]),
     ]),
-    createFurniture("whiteboard", "ホワイトボード", []),
+    createFurniture("whiteboard", "ホワイトボード", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "honami"]),
+      ...filterMemberIdsById(mmjMembers, ["airi"]),
+      ...filterMemberIdsById(wsMembers, ["rui"]),
+      ...filterMemberIdsById(oclockMembers, ["mizuki"]),
+      ...convertToReactions([["saki", "honami"]]),
+    ]),
   ]),
 )
 
@@ -971,33 +1497,33 @@ tags.push(
     createFurniture("craneGame", "クレーンゲーム", [
       ...filterMemberIdsById(leoneedMembers, ["honami"], true),
       ...filterMemberIdsById(mmjMembers, ["shizuku"], true),
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
     createFurniture("puyopuyo", "ぷよぷよeスポーツ", [
       ...filterMemberIdsById(leoneedMembers, ["honami"], true),
       ...filterMemberIdsById(mmjMembers, ["shizuku"], true),
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["airi", "mmj_miku"],
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["airi", "mmj_miku"]]),
     ]),
     createFurniture("printSticker", "プリシ", [
       ...filterMemberIdsById(leoneedMembers, ["honami"], true),
       ...filterMemberIdsById(mmjMembers, ["shizuku"], true),
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["minori", "mmj_rin"],
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["minori", "mmj_rin"]]),
     ]),
     createFurniture("chunithm", "CHUNITHM", [
       ...filterMemberIdsById(leoneedMembers, ["honami"], true),
       ...filterMemberIdsById(mmjMembers, ["shizuku"], true),
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["tsukasa", "nene"],
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["tsukasa", "nene"]]),
     ]),
   ]),
 )
@@ -1005,7 +1531,7 @@ tags.push(
 // グリーン
 tags.push(
   createTag("green", "グリーン", [
-    createFurniture("monstera", "アンスリウム", [
+    createFurniture("anthurium", "アンスリウム", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "honami", "ln_luka"]),
       ...filterMemberIdsById(mmjMembers, ["haruka"]),
       ...filterMemberIdsById(vbsMembers, ["kohane", "akito", "vbs_meiko"]),
@@ -1031,7 +1557,7 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["kohane", "akito", "vbs_meiko"]),
       ...filterMemberIdsById(wsMembers, ["rui"]),
       ...filterMemberIdsById(oclockMembers, ["mafuyu", "ena"], true),
-      ["akito", "vbs_meiko"],
+      ...convertToReactions([["akito", "vbs_meiko"]]),
     ]),
   ]),
 )
@@ -1042,9 +1568,9 @@ tags.push(
     createFurniture("leisureSeat", "ぽかぽかなピクニックのレジャーシート", [
       ...filterMemberIdsById(leoneedMembers, ["shiho"], true),
       ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku"], true),
-      ...vbsMembers,
+      ...vbsReactions,
       ...filterMemberIdsById(wsMembers, ["tsukasa"], true),
-      ...oclockMembers,
+      ...oclockReactions,
     ]),
     createFurniture("woodenBoxTable", "ぽかぽかなピクニックの木の箱テーブル", [
       ...filterMemberIdsById(leoneedMembers, ["honami", "ln_miku"], true),
@@ -1059,63 +1585,69 @@ tags.push(
     ]),
     createFurniture("bicycle", "ぽかぽかなピクニックの自転車", [
       ...filterMemberIdsById(leoneedMembers, ["honami", "ln_miku"], true),
-      ...mmjMembers,
+      ...mmjReactions,
       ...filterMemberIdsById(
         vbsMembers,
         ["kohane", "vbs_miku", "vbs_meiko"],
         true,
       ),
       ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
-      ...oclockMembers,
-      ["vbs_len", "vbs_meiko"],
+      ...oclockReactions,
+      ...convertToReactions([["vbs_len", "vbs_meiko"]]),
     ]),
     createFurniture("stump", "ぽかぽかなピクニックの切り株", [
-      ...leoneedMembers,
-      ...mmjMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["vbs_miku"], true),
-      ...wsMembers,
-      ...oclockMembers,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
     createFurniture(
       "sandwichBox",
       "ぽかぽかなピクニックのサンドイッチボックス",
       [
-        ...leoneedMembers,
-        ...mmjMembers,
-        ...vbsMembers,
-        ...wsMembers,
-        ...oclockMembers,
-        ["mafuyu", "25_miku"],
+        ...leoneedReactions,
+        ...mmjReactions,
+        ...vbsReactions,
+        ...wsReactions,
+        ...oclockReactions,
+        ...convertToReactions([["mafuyu", "25_miku"]]),
       ],
     ),
     createFurniture(
       "fruitJuiceBottle",
       "ぽかぽかなピクニックのフルーツジュース瓶",
       [
-        ...leoneedMembers,
+        ...leoneedReactions,
         ...filterMemberIdsById(mmjMembers, ["haruka"], true),
-        ...vbsMembers,
-        ...wsMembers,
-        ...oclockMembers,
-        ["minori", "mmj_miku"],
+        ...vbsReactions,
+        ...wsReactions,
+        ...oclockReactions,
+        ...convertToReactions([["minori", "mmj_miku"]]),
       ],
     ),
-    createFurniture("basket", "ぽかぽかなピクニックのバスケット", []),
+    createFurniture("basket", "ぽかぽかなピクニックのバスケット", [
+      ...leoneedReactions,
+      ...filterMemberIdsById(mmjMembers, ["haruka"], true),
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
     createFurniture("flowerBasket", "ぽかぽかなピクニックの花かご", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["airi"], true),
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["shizuku", "mmj_miku"],
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["shizuku", "mmj_miku"]]),
     ]),
     createFurniture("lunchBox", "ぽかぽかなピクニックのお弁当箱", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["kohane", "vbs_miku"],
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["kohane", "vbs_miku"]]),
     ]),
     createFurniture("waterBottle", "ぽかぽかなピクニックの水筒", [
       ...filterMemberIdsById(leoneedMembers, ["saki"]),
@@ -1123,14 +1655,21 @@ tags.push(
       ...filterMemberIdsById(vbsMembers, ["an", "vbs_len"], true),
       ...filterMemberIdsById(wsMembers, ["tsukasa", "emu", "nene"]),
       ...filterMemberIdsById(oclockMembers, ["kanade"], true),
-      ["airi", "shizuku"],
+      ...convertToReactions([["airi", "shizuku"]]),
+    ]),
+    createFurniture("chair", "ぽかぽかなピクニックのチェア", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "honami"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an"]),
+      ...filterMemberIdsById(wsMembers, ["nene", "rui"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "ena"]),
     ]),
     createFurniture("tree", "ぽかぽかなピクニックのツリー", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
   ]),
 )
@@ -1152,7 +1691,13 @@ tags.push(
       ...filterMemberIdsById(wsMembers, ["nene", "rui", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
     ]),
-    createFurniture("chair", "月が見える旅館の座椅子", []),
+    createFurniture("chair", "月が見える旅館の座椅子", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["minori"]),
+      ...filterMemberIdsById(vbsMembers, ["toya", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["nene", "rui"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "mizuki"], true),
+    ]),
     createFurniture("futon", "月が見える旅館の布団", [
       ...filterMemberIdsById(leoneedMembers, ["ln_miku", "ln_luka"], true),
       ...filterMemberIdsById(mmjMembers, ["minori", "airi", "shizuku"]),
@@ -1160,39 +1705,64 @@ tags.push(
       ...filterMemberIdsById(wsMembers, ["rui", "ws_miku"], true),
       ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
     ]),
-    createFurniture("chest", "月が見える旅館の茶箪笥", []),
+    createFurniture("chest", "月が見える旅館の茶箪笥", [
+      ...filterMemberIdsById(leoneedMembers, ["ln_miku"], true),
+      ...filterMemberIdsById(mmjMembers, ["mmj_miku"], true),
+      ...filterMemberIdsById(vbsMembers, ["vbs_len", "vbs_meiko"], true),
+      ...filterMemberIdsById(wsMembers, ["rui"], true),
+      ...oclockReactions,
+    ]),
     createFurniture("lantern", "月が見える旅館の行灯", [
-      ...leoneedMembers,
-      ...mmjMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["vbs_miku"], true),
       ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
-      ...oclockMembers,
-      ["toya", "vbs_len"],
+      ...oclockReactions,
+      ...convertToReactions([["toya", "vbs_len"]]),
     ]),
     createFurniture("foldingScreen", "月が見える旅館の屏風", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["shizuku", "mmj_rin"],
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["ichika", "saki"]]),
     ]),
     createFurniture("bonsai", "月が見える旅館の盆栽", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
-      ["shizuku", "mmj_rin"],
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+      ...convertToReactions([["shizuku", "mmj_rin"]]),
     ]),
-    createFurniture("vase", "月が見える旅館の花瓶", []),
+    createFurniture("vase", "月が見える旅館の花瓶", [
+      ...leoneedReactions,
+      ...filterMemberIdsById(mmjMembers, ["mmj_miku"], true),
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
   ]),
 )
 
 // 雷神祭
+const foxStatueReactions = [
+  ...filterMemberIdsById(leoneedMembers, ["ln_miku"], true),
+  ...filterMemberIdsById(mmjMembers, ["airi", "shizuku"], true),
+  ...filterMemberIdsById(vbsMembers, ["kohane", "akito", "vbs_len"]),
+  ...filterMemberIdsById(wsMembers, ["rui", "ws_miku"]),
+  ...filterMemberIdsById(oclockMembers, ["ena"], true),
+]
 tags.push(
   createTag("raijinFestival", "雷神祭", [
-    createFurniture("japaneseDrums", "雷神祭の和太鼓", []),
+    createFurniture("japaneseDrums", "雷神祭の和太鼓", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
     createFurniture("paperLantern", "雷神祭の提灯", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "shiho"]),
       ...filterMemberIdsById(mmjMembers, ["shizuku", "mmj_rin"]),
@@ -1200,7 +1770,13 @@ tags.push(
       ...filterMemberIdsById(wsMembers, ["tsukasa", "emu", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["mafuyu", "ena"]),
     ]),
-    createFurniture("omenYatai", "雷神祭のおめん屋台", []),
+    createFurniture("omenYatai", "雷神祭のおめん屋台", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "saki", "shiho"]),
+      ...filterMemberIdsById(mmjMembers, ["mmj_miku", "mmj_rin"], true),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "akito", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "ws_miku", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "ena"], true),
+    ]),
     createFurniture("cottonCandyStand", "雷神祭のわたがし屋台", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "honami", "ln_miku"]),
       ...filterMemberIdsById(mmjMembers, ["airi", "mmj_rin"]),
@@ -1208,14 +1784,37 @@ tags.push(
       ...filterMemberIdsById(wsMembers, ["nene", "rui", "ws_miku"]),
       ...filterMemberIdsById(oclockMembers, ["mizuki", "25_miku"], true),
     ]),
-    createFurniture("pond", "雷神祭の池", []),
-    createFurniture("foxStatue", "雷神祭の狐像(右向き/左向き)", []),
     createFurniture("lantern", "雷神祭の灯籠", [
       ...filterMemberIdsById(leoneedMembers, ["honami", "ln_luka"]),
       ...filterMemberIdsById(mmjMembers, ["haruka", "mmj_miku"]),
       ...filterMemberIdsById(vbsMembers, ["kohane", "toya", "vbs_meiko"], true),
       ...filterMemberIdsById(wsMembers, ["nene", "ws_miku"], true),
       ...filterMemberIdsById(oclockMembers, ["mizuki", "25_miku"]),
+    ]),
+    createFurniture("pond", "雷神祭の池", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
+    createFurniture("foxStatueRight", "雷神祭の狐像/右向き", [
+      ...addWithItemNamesToReactions(
+        foxStatueReactions,
+        foxStatueReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: foxStatues,
+        })),
+      ),
+    ]),
+    createFurniture("foxStatueLeft", "雷神祭の狐像/左向き", [
+      ...addWithItemNamesToReactions(
+        foxStatueReactions,
+        foxStatueReactions.map((reaction) => ({
+          ...reaction,
+          withItemNames: foxStatues,
+        })),
+      ),
     ]),
     createFurniture("torii", "雷神祭の鳥居", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku", "ln_luka"]),
@@ -1224,7 +1823,13 @@ tags.push(
       ...filterMemberIdsById(wsMembers, ["tsukasa", "nene"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "mafuyu"], true),
     ]),
-    createFurniture("bench", "雷神祭の縁台", []),
+    createFurniture("bench", "雷神祭の縁台", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "shiho", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "mmj_miku"], true),
+      ...filterMemberIdsById(vbsMembers, ["an", "vbs_miku", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["emu", "nene", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "ena"]),
+    ]),
   ]),
 )
 
@@ -1244,21 +1849,28 @@ tags.push(
       ...filterMemberIdsById(oclockMembers, ["kanade", "mizuki"]),
     ]),
     createFurniture("telescope", "天文学者の研究室の天体望遠鏡", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
       ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
-      ...oclockMembers,
-      ["honami", "ln_miku"],
+      ...oclockReactions,
+      ...convertToReactions([["honami", "ln_miku"]]),
     ]),
-    createFurniture("canopyBed", "天文学者の研究室の天蓋つきベッド", []),
+    createFurniture("canopyBed", "天文学者の研究室の天蓋つきベッド", [
+      ...filterMemberIdsById(leoneedMembers, ["ln_miku"], true),
+      ...filterMemberIdsById(mmjMembers, ["mmj_rin"], true),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "emu", "nene"]),
+      ...oclockReactions,
+      ...convertToReactions([["mmj_miku", "mmj_rin"]]),
+    ]),
     createFurniture("bookshelf", "天文学者の研究室の本棚", [
       ...filterMemberIdsById(leoneedMembers, ["saki"], true),
-      ...mmjMembers,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["vbs_miku"], true),
       ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
-      ...oclockMembers,
-      ["toya", "vbs_meiko"],
+      ...oclockReactions,
+      ...convertToReactions([["toya", "vbs_meiko"]]),
     ]),
     createFurniture("desk", "天文学者の研究室の机", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "honami"]),
@@ -1279,21 +1891,27 @@ tags.push(
       ...filterMemberIdsById(oclockMembers, ["ena", "mizuki"]),
     ]),
     createFurniture("celestialGlobe", "天文学者の研究室の天球儀", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku", "mmj_rin"]),
-      ...vbsMembers,
+      ...vbsReactions,
       ...filterMemberIdsById(wsMembers, ["nene", "rui", "ws_kaito"]),
       ...filterMemberIdsById(oclockMembers, ["ena"], true),
-      ["ln_miku", "ln_luka"],
+      ...convertToReactions([["ln_miku", "ln_luka"]]),
     ]),
     createFurniture("stackedBooks", "天文学者の研究室の積み重なった本", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
       ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
-      ...oclockMembers,
+      ...oclockReactions,
     ]),
-    createFurniture("tableLight", "天文学者の研究室のテーブルライト", []),
+    createFurniture("tableLight", "天文学者の研究室のテーブルライト", [
+      ...filterMemberIdsById(leoneedMembers, ["honami", "shiho"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "airi"]),
+      ...filterMemberIdsById(vbsMembers, ["an", "vbs_len"], true),
+      ...filterMemberIdsById(wsMembers, ["emu", "nene", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["mizuki"], true),
+    ]),
   ]),
 )
 
@@ -1301,11 +1919,11 @@ tags.push(
 tags.push(
   createTag("travelersCamp", "旅人のキャンプ", [
     createFurniture("tent", "旅人のキャンプのテント", [
-      ...leoneedMembers,
-      ...mmjMembers,
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
     createFurniture("outdoorChair", "旅人のキャンプのアウトドアチェア", [
       ...filterMemberIdsById(leoneedMembers, ["ichika", "shiho", "ln_luka"]),
@@ -1318,29 +1936,49 @@ tags.push(
       ...filterMemberIdsById(leoneedMembers, ["honami", "shiho", "ln_luka"]),
       ...filterMemberIdsById(mmjMembers, ["minori", "airi", "mmj_rin"]),
       ...filterMemberIdsById(vbsMembers, ["akito", "vbs_len", "vbs_meiko"]),
-      ...wsMembers,
+      ...wsReactions,
       ...filterMemberIdsById(oclockMembers, ["kanade", "mizuki"], true),
     ]),
     createFurniture("bonfireCooking", "旅人のキャンプの焚き火料理", [
-      ...leoneedMembers,
-      ...mmjMembers,
+      ...leoneedReactions,
+      ...mmjReactions,
       ...filterMemberIdsById(vbsMembers, ["kohane"], true),
-      ...wsMembers,
-      ...oclockMembers,
+      ...wsReactions,
+      ...oclockReactions,
     ]),
-    createFurniture("snowMan", "旅人のキャンプの雪だるま", []),
+    createFurniture("firewood", "旅人のキャンプの薪", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika"]),
+      ...filterMemberIdsById(mmjMembers, ["airi", "shizuku"]),
+      ...filterMemberIdsById(vbsMembers, ["akito", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"]),
+    ]),
+    createFurniture("snowMan", "旅人のキャンプの雪だるま", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
     createFurniture("backpack", "旅人のキャンプのリュック", [
-      ...leoneedMembers,
+      ...leoneedReactions,
       ...filterMemberIdsById(mmjMembers, ["minori", "haruka"], true),
-      ...vbsMembers,
-      ...wsMembers,
-      ...oclockMembers,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
+    createFurniture("outdoorBox", "旅人のキャンプのアウトドアボックス", [
+      ...filterMemberIdsById(leoneedMembers, ["honami", "shiho"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka", "mmj_miku"], true),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya"], true),
+      ...wsReactions,
+      ...filterMemberIdsById(oclockMembers, ["kanade", "mizuki"], true),
     ]),
     createFurniture("lanthanum", "旅人のキャンプのランタン", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "ln_luka"]),
       ...filterMemberIdsById(mmjMembers, ["mmj_miku", "mmj_rin"], true),
       ...filterMemberIdsById(vbsMembers, ["toya", "vbs_miku", "vbs_len"], true),
-      ...wsMembers,
+      ...wsReactions,
       ...filterMemberIdsById(oclockMembers, ["kanade", "mizuki"], true),
     ]),
     createFurniture("kettle", "旅人のキャンプのケトル", [
@@ -1356,19 +1994,65 @@ tags.push(
 // スポーツ
 tags.push(
   createTag("sports", "スポーツ", [
-    createFurniture("snowMan", "バスケットボール", []),
-    createFurniture("snowMan", "サッカーボール", []),
-    createFurniture("snowMan", "テニスラケットバッグ", []),
-    createFurniture("snowMan", "バドミントンラケット", []),
+    createFurniture("basketball", "バスケットボール", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "shiho", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka", "mmj_miku"]),
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["nene", "rui"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "mizuki"]),
+      ...convertToReactions([
+        ["kohane", "an"],
+        ["toya", "vbs_len"],
+        ["kanade", "25_miku"],
+      ]),
+    ]),
+    createFurniture("soccerBall", "サッカーボール", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "honami"]),
+      ...filterMemberIdsById(mmjMembers, ["airi", "shizuku"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "akito", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "mizuki"], true),
+      ...convertToReactions([
+        ["minori", "haruka"],
+        ["ws_miku", "ws_kaito"],
+      ]),
+    ]),
+    createFurniture("badmintonRacket", "バドミントンラケット", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "shiho", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "an", "toya"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "emu", "rui"]),
+      ...convertToReactions([["kanade", "ena"]]),
+    ]),
+    createFurniture("tennisRacketBag", "テニスラケットバッグ", [
+      ...filterMemberIdsById(leoneedMembers, ["ln_miku"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "airi", "mmj_rin"]),
+      ...filterMemberIdsById(vbsMembers, ["an", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["emu", "nene", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "mizuki"], true),
+      ...convertToReactions([["saki", "honami"]]),
+    ]),
     createFurniture("baseballBatAndGlove", "野球バットとグローブ", [
       ...filterMemberIdsById(leoneedMembers, ["saki", "honami", "ln_miku"]),
       ...filterMemberIdsById(mmjMembers, ["minori", "mmj_miku", "mmj_rin"]),
       ...filterMemberIdsById(vbsMembers, ["akito", "vbs_miku", "vbs_len"]),
       ...filterMemberIdsById(wsMembers, ["ws_miku"]),
       ...filterMemberIdsById(oclockMembers, ["kanade", "mizuki"]),
-      ["tsukasa", "rui"],
+      ...convertToReactions([["tsukasa", "rui"]]),
     ]),
-    createFurniture("snowMan", "卓球台", []),
+    createFurniture("tableTennisTable", "卓球台", [
+      ...convertToReactions([
+        ["ichika", "shiho"],
+        ["ln_miku", "ln_luka"],
+        ["airi", "shizuku"],
+        ["mmj_miku", "mmj_rin"],
+        ["akito", "toya"],
+        ["vbs_miku", "vbs_meiko"],
+        ["tsukasa", "ws_kaito"],
+        ["emu", "nene"],
+        ["mafuyu", "mizuki"],
+      ]),
+    ]),
   ]),
 )
 
