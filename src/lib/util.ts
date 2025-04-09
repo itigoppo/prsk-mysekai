@@ -89,6 +89,38 @@ export const filterByReactionsCount = (tags: Tag[], q?: string): Tag[] => {
     .filter((tag) => tag.furnitureList.length > 0) // 家具が残っているTagのみ残す
 }
 
+// 全てのリアクションが確認済みの家具を除外する
+export const filterByCompleteReaction = (
+  tags: Tag[],
+  excludeChecked: boolean,
+  savedReactions: Record<string, string[]>,
+): Tag[] => {
+  if (!excludeChecked) {
+    return tags
+  }
+
+  return tags
+    .map((tag) => ({
+      ...tag,
+      furnitureList: tag.furnitureList.filter((furniture) => {
+        const totalCount = furniture.reactions.length
+        let checkedCount = 0
+        furniture.reactions.map((reaction) => {
+          const saveValue = reaction.memberIds.join("_")
+          const checked =
+            savedReactions[`${tag.id}_${furniture.id}`]?.includes(saveValue)
+          if (checked) {
+            checkedCount++
+          }
+        })
+        const isComplete = checkedCount === totalCount
+
+        return !isComplete // 全リアクション確認済みのものは除外
+      }),
+    }))
+    .filter((tag) => tag.furnitureList.length > 0) // 家具が残っているTagのみ残す
+}
+
 // 家具のデータを作成する
 export const createFurniture = (
   id: string,

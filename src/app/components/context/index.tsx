@@ -7,6 +7,7 @@ import {
   removeReaction,
 } from "@/lib/localStorage"
 import {
+  filterByCompleteReaction,
   filterByOneReaction,
   filterByReactionsCount,
   getFilteredFurniture,
@@ -33,6 +34,7 @@ const MySekaiContext = createContext<
         memberIds: string[]
         soloTags: Tag[]
         combinationTags: Tag[]
+        excludeChecked: boolean
       }
       dispatch: {
         add: (tagId: string, itemId: string, userId: string) => void
@@ -41,6 +43,7 @@ const MySekaiContext = createContext<
         setText: Dispatch<SetStateAction<string>>
         reset: () => void
         setMemberIds: Dispatch<SetStateAction<string[]>>
+        setExcludeChecked: Dispatch<SetStateAction<boolean>>
       }
     }
   | undefined
@@ -80,6 +83,7 @@ export const MySekaiContextProvider = ({
   const [text, setText] = useState<string>("")
   const [q, setQ] = useState<string | undefined>(undefined)
   const [memberIds, setMemberIds] = useState<string[]>([])
+  const [excludeChecked, setExcludeChecked] = useState<boolean>(true)
 
   useDebounce(
     () => {
@@ -95,8 +99,16 @@ export const MySekaiContextProvider = ({
   }, [setText, setQ])
 
   const unitTags = getFilteredFurniture(memberIds, tags)
-  const soloTags = filterByOneReaction(unitTags, q)
-  const combinationTags = filterByReactionsCount(unitTags, q)
+  const soloTags = filterByCompleteReaction(
+    filterByOneReaction(unitTags, q),
+    excludeChecked,
+    savedReactions,
+  )
+  const combinationTags = filterByCompleteReaction(
+    filterByReactionsCount(unitTags, q),
+    excludeChecked,
+    savedReactions,
+  )
 
   return (
     <MySekaiContext.Provider
@@ -108,6 +120,7 @@ export const MySekaiContextProvider = ({
           memberIds,
           soloTags,
           combinationTags,
+          excludeChecked,
         },
         dispatch: {
           add,
@@ -116,6 +129,7 @@ export const MySekaiContextProvider = ({
           setText,
           reset,
           setMemberIds,
+          setExcludeChecked,
         },
       }}
     >

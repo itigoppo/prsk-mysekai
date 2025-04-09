@@ -1,6 +1,7 @@
 import { Expander } from "@/app/components/atoms/Expander"
 import { Member } from "@/types"
-import { TextField } from "@mui/material"
+import { CheckBoxOutlineBlank, CheckBoxOutlined } from "@mui/icons-material"
+import { Stack, TextField } from "@mui/material"
 import { ChangeEvent, FC, useEffect } from "react"
 import { Element } from "react-scroll"
 import { useMySekaiContext } from "../../context"
@@ -33,6 +34,22 @@ export const TagList: FC<Props> = ({ members }) => {
               dispatch.setText(e.currentTarget.value)
             }}
           />
+        </div>
+
+        <div
+          onClick={() => {
+            dispatch.setExcludeChecked((state) => !state)
+          }}
+          className="flex-1 hover:cursor-pointer"
+        >
+          <Stack alignItems="center" direction="row" gap={1}>
+            {state.excludeChecked ? (
+              <CheckBoxOutlined className="text-teal-600" />
+            ) : (
+              <CheckBoxOutlineBlank />
+            )}
+            <div>全員のリアクション閲覧済みは除外</div>
+          </Stack>
         </div>
 
         {state.soloTags.length === 0 && state.combinationTags.length === 0 && (
