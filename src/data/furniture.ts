@@ -2056,4 +2056,52 @@ tags.push(
   ]),
 )
 
+// 虹色アトリエルーム
+tags.push(
+  createTag("rainbow", "虹色アトリエルーム", [
+    createFurniture("chest", "虹色アトリエルームのチェスト", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "saki", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka", "mmj_miku"]),
+      ...filterMemberIdsById(vbsMembers, ["akito", "toya"], true),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "nene", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "mizuki"]),
+    ]),
+    createFurniture("stool", "虹色アトリエルームのスツール", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_miku"], true),
+      ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku"]),
+      ...filterMemberIdsById(vbsMembers, ["an", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["nene", "rui", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "mafuyu"]),
+    ]),
+    createFurniture("easel", "虹色アトリエルームのイーゼル", [
+      ...leoneedReactions,
+      ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku"], true),
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"], true),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "nene"], true),
+      ...filterMemberIdsById(oclockMembers, ["25_miku"], true),
+    ]),
+    createFurniture("desk", "虹色アトリエルームの机", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
+    createFurniture("shelf", "虹色アトリエルームのシェルフ", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika"], true),
+      ...filterMemberIdsById(mmjMembers, ["minori", "airi"], true),
+      ...filterMemberIdsById(vbsMembers, ["toya", "vbs_miku"], true),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "emu", "ws_kaito"]),
+      ...oclockReactions,
+    ]),
+    createFurniture("palette", "虹色アトリエルームのパレット", [
+      ...filterMemberIdsById(leoneedMembers, ["honami", "shiho"], true),
+      ...filterMemberIdsById(mmjMembers, ["shizuku", "mmj_rin"]),
+      ...filterMemberIdsById(vbsMembers, ["an", "akito"]),
+      ...filterMemberIdsById(wsMembers, ["ws_miku"], true),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "ena"]),
+    ]),
+  ]),
+)
+
 export { tags }
