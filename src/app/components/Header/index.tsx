@@ -1,4 +1,5 @@
 "use client"
+import { version } from "@/data/furniture"
 import { units } from "@/data/members"
 import clsx from "clsx"
 import Link from "next/link"
@@ -16,7 +17,7 @@ export const Header: FC<Props> = ({ title }) => {
     <>
       <header className="mx-auto max-w-7xl px-4 md:max-w-md">
         とうふの森リアクション早見表{" "}
-        <span className="text-xs text-slate-500">(v250408)</span>
+        <span className="text-xs text-slate-500">({version})</span>
         {title && <div>{title}</div>}
       </header>
       <nav className="mx-auto max-w-7xl md:max-w-md">

@@ -57,6 +57,7 @@ const sofas = [
   "ひび割れたハートのソファ",
   "ナチュラルな2人掛けソファ",
   "フレンチスタイルのソファ",
+  "リゾートのダブルソファ",
 ]
 const musicPlayer = ["コンポーネントオーディオ", "レコードプレイヤー", "蓄音機"]
 const flowerBeds = [
@@ -1559,6 +1560,13 @@ tags.push(
       ...filterMemberIdsById(oclockMembers, ["mafuyu", "ena"], true),
       ...convertToReactions([["akito", "vbs_meiko"]]),
     ]),
+    createFurniture("palmTree", "ユスラヤシ", [
+      ...filterMemberIdsById(leoneedMembers, ["ichika", "ln_luka"]),
+      ...filterMemberIdsById(mmjMembers, ["mmj_miku", "mmj_rin"]),
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["tsukasa", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu"]),
+    ]),
   ]),
 )
 
@@ -2103,5 +2111,100 @@ tags.push(
     ]),
   ]),
 )
+
+// リゾート
+tags.push(
+  createTag("resort", "リゾート", [
+    createFurniture("deckChair", "リゾートのデッキチェア", [
+      ...filterMemberIdsById(leoneedMembers, ["saki"], true),
+      ...filterMemberIdsById(mmjMembers, ["haruka"]),
+      ...filterMemberIdsById(vbsMembers, ["akito", "toya", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["rui", "ws_kaito"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "mizuki"], true),
+    ]),
+    createFurniture("swimRing", "リゾートの浮き輪", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "ln_miku"]),
+      ...filterMemberIdsById(mmjMembers, ["minori", "mmj_rin"]),
+      ...filterMemberIdsById(vbsMembers, ["kohane", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["emu", "ws_miku"]),
+      ...filterMemberIdsById(oclockMembers, ["kanade", "25_miku"]),
+    ]),
+    createFurniture("parasol", "リゾートのパラソル", [
+      ...filterMemberIdsById(leoneedMembers, ["honami", "ln_miku"], true),
+      ...filterMemberIdsById(mmjMembers, ["airi"]),
+      ...filterMemberIdsById(vbsMembers, ["vbs_miku", "vbs_len"]),
+      ...filterMemberIdsById(wsMembers, ["nene"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "ena"]),
+    ]),
+    createFurniture("pool", "リゾートのプール", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
+    createFurniture("jettedTub", "リゾートのジェットバス", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
+    createFurniture("hammock", "リゾートのハンモック", [
+      ...leoneedReactions,
+      ...mmjReactions,
+      ...vbsReactions,
+      ...wsReactions,
+      ...oclockReactions,
+    ]),
+    createFurniture("lowTable", "リゾートのローテーブル", [
+      ...filterMemberIdsById(leoneedMembers, ["saki", "honami", "shiho"]),
+      ...filterMemberIdsById(mmjMembers, ["haruka", "shizuku", "mmj_miku"]),
+      ...filterMemberIdsById(vbsMembers, ["an", "vbs_len", "vbs_meiko"]),
+      ...filterMemberIdsById(wsMembers, ["nene", "ws_miku"]),
+      ...filterMemberIdsById(oclockMembers, ["mafuyu", "25_miku"], true),
+    ]),
+    createFurniture("sofa", "リゾートのダブルソファ", [
+      ...addWithItemNamesToReactions(
+        leoneedPairs,
+        leoneedPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        mmjPairs,
+        mmjPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        vbsPairs,
+        vbsPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        wsPairs,
+        wsPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+      ...addWithItemNamesToReactions(
+        oclockPairs,
+        oclockPairs.map((reaction) => ({
+          ...reaction,
+          withItemNames: sofas,
+        })),
+      ),
+    ]),
+  ]),
+)
+
+// 最終更新日
+export const version = "v250613"
 
 export { tags }
