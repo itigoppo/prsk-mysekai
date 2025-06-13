@@ -19,6 +19,8 @@ export const addReaction = (
   } else {
     savedReactions[reactionKey] = [userId]
   }
+  // 重複排除
+  savedReactions[reactionKey] = Array.from(new Set(savedReactions[reactionKey]))
   localStorage.setItem(localStorageKey, JSON.stringify(savedReactions))
 }
 
